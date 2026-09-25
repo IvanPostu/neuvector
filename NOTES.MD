@@ -44,13 +44,24 @@ make && echo $?
 #### Make image
 cp neuvector/Makefile .
 make ctrl_image
+#  => [1/2] FROM docker.io/neuvector/controller_base:latest
+#  => [2/2] COPY stage /
 make enf_image
-
+# => [1/2] FROM docker.io/neuvector/enforcer_base:latest
+#  => [2/2] COPY stage / 
 $ docker images
-#                                                                                                                                                                                                i Info →   U  In Use
-# IMAGE                              ID             DISK USAGE   CONTENT SIZE   EXTRA
-# neuvector/controller:latest        faa89a1a9bd7        555MB             0B        
-# neuvector/controller_base:latest   970b28c435c9        378MB             0B        
-# neuvector/enforcer:latest          776c90f3d878        538MB             0B        
-# neuvector/enforcer_base:latest     836e5fcc35af        426MB             0B 
+
+
+docker run --name neuvector.scanner --rm -e SCANNER_REPOSITORY=ubuntu -e SCANNER_TAG=16.04 -e SCANNER_ON_DEMAND=true -v /var/run/docker.sock:/var/run/docker.sock -v /var/neuvector:/var/neuvector  neuvector/scanner
+
+docker run --name neuvector.scanner --rm -e SCANNER_REPOSITORY=chainguard/wolfi-base -e SCANNER_TAG=sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 -e SCANNER_ON_DEMAND=true -v /var/run/docker.sock:/var/run/docker.sock -v /var/neuvector:/var/neuvector  neuvector/scanner
+
+docker image inspect chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 | grep Architecture
+
+docker run --name dummy1 --rm -it chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 sh
+ls /lib
 ```
+
+## References
+
+1. <https://open-docs.neuvector.com/scanning/scanners/>
