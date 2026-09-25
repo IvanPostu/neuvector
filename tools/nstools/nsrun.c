@@ -125,10 +125,12 @@ int nsrun(const char *mntns, const char **nss, const char *script, int bin, int 
 
         // Remove ""
         if (script[0] == '"') {
-            strncpy(script_buf, script + 1, sizeof(script_buf));
+            snprintf(script_buf, sizeof(script_buf), "%s", script + 1);
+            // strncpy(script_buf, script + 1, sizeof(script_buf));
             script_buf[len - 2] = '\0';
         } else {
-            strncpy(script_buf, script, sizeof(script_buf));
+            snprintf(script_buf, sizeof(script_buf), "%s", script);
+            // strncpy(script_buf, script, sizeof(script_buf));
             script_buf[len] = '\0';
         }
     } else if (script != NULL) {
