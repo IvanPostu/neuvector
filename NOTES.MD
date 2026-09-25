@@ -1,5 +1,7 @@
 # Notes
 
+Observation, to create a high level folder, a lot of commands depends on it!
+
 ```sh
 # clean everything
 docker system prune --all --volumes
@@ -8,6 +10,7 @@ docker system prune --all --volumes
 docker run --rm --name build -e NV_BUILD_TARGET= --net=none -v /home/iv127/Projects/neuvector:/go/src/github.com/neuvector/neuvector -w /go/src/github.com/neuvector/neuvector -it --entrypoint bash neuvector/build_fleet:v3
 
 # error!
+# go version doesn't support module
 9ad2f10df72f:/go/src/github.com/neuvector/neuvector # go test github.com/neuvector/neuvector/share/...
 go: go.mod requires go >= 1.27.1 (running go 1.24.1; GOTOOLCHAIN=local)
 
@@ -62,6 +65,19 @@ docker run --name dummy1 --rm -it chainguard/wolfi-base@sha256:13ecca0cd6ee68809
 ls /lib
 ```
 
+## Other
+
+```txt
+is version 1.3.2.1_rc20260601-r0 greater than 1.3-r1?
+  1.3.2.1 is newer than 1.3 (since .2.1 comes after 1.3).
+
+is version 1.3.2.1_rc20260601-r0 greater than 1.3.2-r0?
+  1.3.2.1 includes an extra patch level (.1) compared to 1.3.2 (which is equivalent to 1.3.2.0).
+```
+
 ## References
 
 1. <https://open-docs.neuvector.com/scanning/scanners/>
+1. <https://images.chainguard.dev/security?query=CVE-2026-27171>
+1. <https://wolfi.pkgs.org/rolling/wolfi-base-aarch64/zlib-1.3.2.1_rc20260601-r0.apk.html>
+1. <https://pkgs.org/download/zlib>
