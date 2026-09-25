@@ -65,6 +65,20 @@ docker run --name dummy1 --rm -it chainguard/wolfi-base@sha256:13ecca0cd6ee68809
 ls /lib
 ```
 
+## scanner
+
+```sh
+# make test
+go test ./... && echo $?
+
+go run ./cmd/scanner/ --license on_demand --repository chainguard/wolfi-base --tag sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 --d data/
+
+# for https://github.com/neuvector/scanner/blob/main/data/cvedb
+# in scanner
+git lfs install
+git lfs pull origin main
+```
+
 ## Other
 
 ```txt

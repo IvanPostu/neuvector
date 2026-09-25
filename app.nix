@@ -17,6 +17,7 @@ pkgs.mkShell {
     pkgs.jemalloc
 
     pkgs.clang-tools
+    pkgs.git-lfs
 
     pkgs.kubernetes-controller-tools
 
