@@ -2,7 +2,7 @@ let
   pkgs = import <nixpkgs> { config = { allowUnfree = false; }; };
   PROJECT_ROOT = builtins.toString ./.;
 in
-pkgs.mkShell {
+(pkgs.mkShell.override { stdenv = pkgs.gcc13Stdenv; }) {
   name = "app-shell";
 
   buildInputs = [
@@ -17,7 +17,7 @@ pkgs.mkShell {
     pkgs.jemalloc
 
     pkgs.clang-tools
-    pkgs.git-lfs
+    # pkgs.git-lfs
     pkgs.dive # e.g. dive docker-image
 
     pkgs.kubernetes-controller-tools

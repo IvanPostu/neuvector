@@ -216,6 +216,99 @@ These 2 vulnerabilities were fixed and shouldn't appear.
 Seems that this edge case can't be handled by:
 > dpkg-1.17.25's algorithm  (lib/version.c)
 
+## monitor - typedef unsigned char bool; causes compilation failure for new versions of gcc
+
+Precondition: `cd monitor`
+
+```sh
+$ gcc --version
+gcc (GCC) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+In file included from <command-line>:
+././../base.h:6:23: error: ‘bool’ cannot be defined via ‘typedef’
+    6 | typedef unsigned char bool;
+      |                       ^~~~
+././../base.h:6:23: note: ‘bool’ is a keyword with ‘-std=c23’ onwards
+././../base.h:6:1: error: useless type name in empty declaration [-Werror]
+    6 | typedef unsigned char bool;
+      | ^~~~~~~
+cc1: all warnings being treated as errors
+make: *** [Makefile.rule:58: .objs/monitor.o] Error 1
+```
+
+```sh
+$ gcc --version
+gcc (GCC) 14.3.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+gcc -o monitor  .objs/monitor.o  -lrt 
+$ echo $?
+0
+```
+
+```sh
+$ gcc --version
+gcc (GCC) 13.4.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make && echo $?
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+gcc -o monitor  .objs/monitor.o  -lrt 
+0
+```
+
+## Solution
+
+```sh
+$ gcc --version
+gcc (GCC) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make && echo $?
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+gcc -o monitor  .objs/monitor.o  -lrt 
+0
+```
+
+```sh
+$ gcc --version
+gcc (GCC) 14.3.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make && echo $?
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+gcc -o monitor  .objs/monitor.o  -lrt 
+0
+```
+
+```sh
+$ gcc --version
+gcc (GCC) 13.4.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ make && echo $?
+gcc -Wall -Werror -fstrict-aliasing -Wstrict-aliasing -g -I./ -I./ -O3  -include ./../base.h -c monitor.c -o .objs/monitor.o -MD -MF .objs/monitor.d
+gcc -o monitor  .objs/monitor.o  -lrt 
+0
+```
+
 ## References
 
 1. <https://open-docs.neuvector.com/scanning/scanners/>
