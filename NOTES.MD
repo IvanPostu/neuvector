@@ -151,6 +151,71 @@ Vulnerabilities: 2, HIGH: 1, MEDIUM: 0, LOW: 1, UNKNOWN: 0
 2026-09-25T19:03:07.282|ERRO|SCN|system.(*SystemTools).KillCommandSubtree: can not signal - error=no such process pid=41
 ```
 
+## Issue
+
+### Bug: [Scanner] incorrectly compares versions of libraries for wolfi images which contains _rc substring causing false negative outcome (bug scanner)
+
+#### Steps to reproduce
+
+Run scanner container in standalone mode for wolfi image that has `zlib` with version `1.3.2.1_rc20260601-r0`:
+
+```sh
+docker run --name neuvector.scanner \
+  --rm -e SCANNER_REPOSITORY=chainguard/wolfi-base \
+  -e SCANNER_TAG=sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 \
+  -e SCANNER_ON_DEMAND=true \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/neuvector:/var/neuvector  neuvector/scanner
+```
+
+Output:
+
+```txt
+2026-09-26T13:37:31|MON|Start scanner, pid=7
+2026-09-26T13:37:31.709|INFO|SCN|container.Connect: - endpoint=unix:///var/run/docker.sock
+2026-09-26T13:37:31.711|INFO|SCN|container.InitStubRtDriver:
+2026-09-26T13:37:31.758|INFO|SCN|main.main: Scan cacher maximum sizes - record=0
+2026-09-26T13:37:31.761|INFO|SCN|common.LoadCveDb: Expand new DB - version=4.29
+2026-09-26T13:37:55.567|INFO|SCN|main.scanOnDemand: registry - dockerRegistries.Contains(req.Registry)=false req.Registry= req.Repository=chainguard/wolfi-base
+Image: https://registry.hub.docker.com/chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909
+Base OS: wolfi:20230201
+Created at: 2026-09-24T16:25:14Z
+
+Vulnerabilities: 2, HIGH: 1, MEDIUM: 0, LOW: 1, UNKNOWN: 0
+┌─────────┬────────────────┬──────────┬───────────────────────┬───────────────┬────────────┐
+│ PACKAGE │ VULNERABILITY  │ SEVERITY │ VERSION               │ FIXED VERSION │ PUBLISHED  │
+├─────────┼────────────────┼──────────┼───────────────────────┼───────────────┼────────────┤
+│ zlib    │ CVE-2023-45853 │ High     │ 1.3.2.1_rc20260601-r0 │ 1.3-r1        │ 2025-10-30 │
+│         ├────────────────┼──────────┤                       ├───────────────┼────────────┤
+│         │ CVE-2026-27171 │ Low      │                       │ 1.3.2-r0      │ 2026-02-25 │
+└─────────┴────────────────┴──────────┴───────────────────────┴───────────────┴────────────┘
+2026-09-26T13:38:01.506|ERRO|SCN|system.(*SystemTools).KillCommandSubtree: can not signal - error=no such process pid=41
+```
+
+Chainguard fixed these CVEs:
+
+- Oct 20, 2023 - <https://images.chainguard.dev/security?query=CVE-2023-45853>
+- Feb 25, 2026 - <https://images.chainguard.dev/security?query=CVE-2026-27171>
+
+The image was created on 2026-09-24:
+
+```sh
+docker image inspect chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 | grep Created
+        "Created": "2026-09-24T16:25:14Z",
+```
+
+#### Expected behavior
+
+These 2 vulnerabilities were fixed and shouldn't appear.
+
+- Must be true: `1.3.2.1_rc20260601-r0 > 1.3-r1`
+- Must be true: `1.3.2.1_rc20260601-r0 > 1.3.2-r0`
+
+#### Deeper analysis
+
+Seems that this edge case can't be handled by:
+> dpkg-1.17.25's algorithm  (lib/version.c)
+
 ## References
 
 1. <https://open-docs.neuvector.com/scanning/scanners/>
