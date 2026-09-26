@@ -30,7 +30,9 @@ pkgs.mkShell {
     pkgs.gopls                   # Go Language Server
     pkgs.gotools                 # Contains goimports, godoc, etc.
     pkgs.golangci-lint           # Highly recommended aggregator for Go linters
-    pkgs.delve                   # Go debugger (dlv)
+
+    # run: go install github.com/go-delve/delve/cmd/dlv@latest
+    # pkgs.delve                   # Go debugger (dlv)
   ];
 
   # Set up environment variables

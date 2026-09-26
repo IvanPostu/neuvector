@@ -63,6 +63,10 @@ docker image inspect chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5b
 
 docker run --name dummy1 --rm -it chainguard/wolfi-base@sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 sh
 ls /lib
+cat /usr/lib/apk/db/installed | grep zlib
+
+
+"P:wolfi-baselayout\nV:20230201-r30\no:wolfi-baselayout\n\nP:ca-certificates-bundle\nV:20260909-r1\no:ca-certificates\n\nP:glibc-2.44-locale-posix\nV:2.44-r6\no:glibc-2.44\n\nP:libgcc\nV:16.2.0-r1\no:gcc\n\nP:glibc-2.44\nV:2.44-r6\no:glibc-2.44\n\nP:ld-linux-2.44\nV:2.44-r6\no:glibc-2.44\n\nP:openssl-provider-legacy-allowed\nV:4.0.2-r3\no:openssl-provider-legacy-allowed\n\nP:libbrotlicommon1\nV:1.2.0-r5\no:brotli\n\nP:libbrotlidec1\nV:1.2.0-r5\no:brotli\n\nP:libbrotlienc1\nV:1.2.0-r5\no:brotli\n\nP:openssl-4.0-libcrypto\nV:4.0.2-r2\no:openssl-4.0\n\nP:libcrypto3\nV:3.6.4-r8\no:openssl\n\nP:openssl-4.0-libssl\nV:4.0.2-r2\no:openssl-4.0\n\nP:libssl3\nV:3.6.4-r8\no:openssl\n\nP:zlib\nV:1.3.2.1_rc20260601-r0\no:zlib\n\nP:apk-tools\nV:2.14.10-r15\no:apk-tools\n\nP:libxcrypt\nV:4.5.2-r5\no:libxcrypt\n\nP:libcrypt1-2.44\nV:2.44-r6\no:glibc-2.44\n\nP:busybox\nV:1.38.0-r2\no:busybox\n\nP:wolfi-keys\nV:1-r13\no:wolfi-keys\n\nP:wolfi-base\nV:1-r7\no:wolfi-base\n\n"
 ```
 
 ## scanner
@@ -87,6 +91,7 @@ git lfs uninstall
 #     "${VULNDB_VERSION}"
 
 ./dbgen -v 4.292
+# see ls /tmp/neuvector/db/
 
 # docker save -o neuvector-scanner.tar neuvector/scanner:latest
 
@@ -98,6 +103,19 @@ docker cp <container_id_or_name>:/path/to/file/inside/container /path/on/host/de
 
 docker run neuvector/scanner
 docker cp elastic_euclid:/etc/neuvector/db/cvedb .
+
+go run ./cmd/scanner/ --license on_demand --repository chainguard/wolfi-base --tag sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 --d ../
+
+cd task/
+make
+
+# edit const taskerPath = in scanner proj
+
+
+./task/scannerTask -t reg -u unix:///var/run/docker.sock -maxrec 0 --enable-jar-auto-module-name -i ../tmp/input.json -o ../tmp/output.json
+
+###
+# git clone https://git.dpkg.org/git/dpkg/dpkg.git
 ```
 
 ## Other
