@@ -18,6 +18,7 @@ pkgs.mkShell {
 
     pkgs.clang-tools
     pkgs.git-lfs
+    pkgs.dive # e.g. dive docker-image
 
     pkgs.kubernetes-controller-tools
 

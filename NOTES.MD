@@ -77,6 +77,27 @@ go run ./cmd/scanner/ --license on_demand --repository chainguard/wolfi-base --t
 # in scanner
 git lfs install
 git lfs pull origin main
+
+git lfs uninstall
+
+# VULNDB_VERSION=4.290 bash scripts/ghcr-vulndb-artifact.sh download \
+#     cvedb \
+#     cvedb.regular \
+#     data/cvedb.regular \
+#     "${VULNDB_VERSION}"
+
+./dbgen -v 4.292
+
+# docker save -o neuvector-scanner.tar neuvector/scanner:latest
+
+find / -xdev -type f -exec ls -l {} + | sort -k5,5nr | head -n 20
+
+/usr/local/bin/scanner --license on_demand --repository chainguard/wolfi-base --tag sha256:13ecca0cd6ee68809c95676fbe2b5bd65878ab8974dab5059ea6dc4db4de6909 -d /etc/neuvector/db/
+
+docker cp <container_id_or_name>:/path/to/file/inside/container /path/on/host/destination
+
+docker run neuvector/scanner
+docker cp elastic_euclid:/etc/neuvector/db/cvedb .
 ```
 
 ## Other
@@ -119,3 +140,5 @@ Vulnerabilities: 2, HIGH: 1, MEDIUM: 0, LOW: 1, UNKNOWN: 0
 1. <https://wolfi.pkgs.org/rolling/wolfi-base-aarch64/zlib-1.3.2.1_rc20260601-r0.apk.html>
 1. <https://pkgs.org/download/zlib>
 1. <https://github.com/wolfi-dev/os>
+1. <https://hub.docker.com/layers/neuvector/scanner/6/images/sha256-708f21a180921e850942bbf5d424f0e6f5a48da6a2c53d2c8453d4c9a0865b5e>
+    1. see VULNDB_VERSION=4.290
